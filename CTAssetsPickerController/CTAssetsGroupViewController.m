@@ -136,6 +136,15 @@
                                     action:@selector(finishPickingAssets:)];
     
     self.navigationItem.rightBarButtonItem.enabled = (self.picker.selectedAssets.count > 0);
+
+    UISegmentedControl * sourceToggle = [[UISegmentedControl alloc] initWithItems: @[NSLocalizedString(@"Albums", nil), NSLocalizedString(@"Library", nil)]];
+    [sourceToggle addTarget:self action: @selector(didToggleSource:) forControlEvents: UIControlEventValueChanged];
+    self.navigationItem.titleView = sourceToggle;
+    sourceToggle.selectedSegmentIndex = 0;
+}
+
+- (void) didToggleSource: (id) sender {
+    NSLog(@"toggologgo");
 }
 
 - (void)setupToolbar
