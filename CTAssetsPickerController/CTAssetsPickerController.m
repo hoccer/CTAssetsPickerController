@@ -31,6 +31,8 @@
 #import "CTAssetsPageViewController.h"
 #import "CTAssetsViewControllerTransition.h"
 
+#import "HXOThemedNavigationController.h"
+
 
 
 
@@ -81,7 +83,7 @@ NSString * const CTAssetsPickerSelectedAssetsChangedNotification = @"CTAssetsPic
 - (void)setupNavigationController
 {
     CTAssetsGroupViewController *vc = [[CTAssetsGroupViewController alloc] init];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
+    UINavigationController *nav = [[HXOThemedNavigationController alloc] initWithRootViewController:vc];
     nav.delegate = self;
     
     [nav willMoveToParentViewController:self];
