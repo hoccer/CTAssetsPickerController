@@ -231,6 +231,13 @@ NSString * const CTAssetsPickerSelectedAssetsChangedNotification = @"CTAssetsPic
     [self removeObjectFromSelectedAssetsAtIndex:[self.selectedAssets indexOfObject:asset]];
 }
 
+- (void) selectMediaItem: (MPMediaItem*) item {
+    [self insertObject: item inSelectedAssetsAtIndex:self.countOfSelectedAssets];
+}
+
+- (void) deselectMediaItem: (MPMediaItem*) item {
+    [self removeObjectFromSelectedAssetsAtIndex:[self.selectedAssets indexOfObject: item]];
+}
 
 #pragma mark - Not Allowed / No Assets Views
 
@@ -388,6 +395,13 @@ NSString * const CTAssetsPickerSelectedAssetsChangedNotification = @"CTAssetsPic
     }];
 }
 
+- (NSPredicate*) songPredicate {
+    return [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        NSLog(@"%@", evaluatedObject);
+        return [evaluatedObject isKindOfClass: [MPMediaItem class]];
+    }];
+}
+
 - (NSString *)toolbarTitle
 {
     if (self.selectedAssets.count == 0)
@@ -396,20 +410,26 @@ NSString * const CTAssetsPickerSelectedAssetsChangedNotification = @"CTAssetsPic
     NSPredicate *photoPredicate = [self predicateOfAssetType:ALAssetTypePhoto];
     NSPredicate *videoPredicate = [self predicateOfAssetType:ALAssetTypeVideo];
     
-    BOOL photoSelected = ([self.selectedAssets filteredArrayUsingPredicate:photoPredicate].count > 0);
-    BOOL videoSelected = ([self.selectedAssets filteredArrayUsingPredicate:videoPredicate].count > 0);
+    BOOL photoSelected = [self.selectedAssets filteredArrayUsingPredicate:photoPredicate].count > 0;
+    BOOL videoSelected = [self.selectedAssets filteredArrayUsingPredicate:videoPredicate].count > 0;
+    BOOL songsSelected = [self.selectedAssets filteredArrayUsingPredicate: [self songPredicate]].count > 0;
+    NSUInteger typeCount = 0 + (photoSelected ? 1 : 0) + (videoSelected ? 1 : 0) + (songsSelected ? 1 : 0);
     
     NSString *format;
-    
-    if (photoSelected && videoSelected)
+
+    if (typeCount == 1) {
+        if (photoSelected) {
+            format = (self.selectedAssets.count > 1) ? NSLocalizedString(@"%ld Photos Selected", nil) : NSLocalizedString(@"%ld Photo Selected", nil);
+        } else if (videoSelected) {
+            format = (self.selectedAssets.count > 1) ? NSLocalizedString(@"%ld Videos Selected", nil) : NSLocalizedString(@"%ld Video Selected", nil);
+        } else if (songsSelected) {
+            format = (self.selectedAssets.count > 1) ? NSLocalizedString(@"%ld Songs Selected", nil) : NSLocalizedString(@"%ld Song Selected", nil);
+        } else {
+            NSLog(@"kaputt");
+        }
+    } else {
         format = NSLocalizedString(@"%ld Items Selected", nil);
-    
-    else if (photoSelected)
-        format = (self.selectedAssets.count > 1) ? NSLocalizedString(@"%ld Photos Selected", nil) : NSLocalizedString(@"%ld Photo Selected", nil);
-    
-    else if (videoSelected)
-        format = (self.selectedAssets.count > 1) ? NSLocalizedString(@"%ld Videos Selected", nil) : NSLocalizedString(@"%ld Video Selected", nil);
-    
+    }
     return [NSString stringWithFormat:format, (long)self.selectedAssets.count];
 }
 

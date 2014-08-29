@@ -70,10 +70,6 @@ NSString * const kPlaylists = @"Playlists";
 
 @end
 
-
-
-
-
 @implementation CTAssetsGroupViewController
 
 - (id)init
@@ -508,7 +504,7 @@ NSString * const kPlaylists = @"Playlists";
             playlistsViewController.title = NSLocalizedString(@"Playlists", @"Playlists");
             playlistsViewController.delegate = self;
             playlistsViewController.showsCancelButton = YES;
-            playlistsViewController.allowsSelectionOfNonPlayableItem = NO; //self.allowsSelectionOfNonPlayableItem;
+            playlistsViewController.allowsSelectionOfNonPlayableItem = NO;
             vc = playlistsViewController;
         } else {
             NSLog(@"Unhandled subview %@", groupName);
@@ -522,7 +518,8 @@ NSString * const kPlaylists = @"Playlists";
 
 - (void)jgMediaQueryViewController:(JGMediaQueryViewController *)mediaQueryViewController didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection selectedItem:(MPMediaItem *)selectedItem {
 
-    NSLog(@"selected %@", selectedItem);
+    //NSLog(@"selected %@", selectedItem);
+    [self.picker selectMediaItem: selectedItem];
 }
 
 - (void)jgMediaQueryViewControllerDidCancel:(JGMediaQueryViewController *)mediaPicker {

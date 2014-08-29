@@ -28,7 +28,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-
+#import <MediaPlayer/MediaPlayer.h>
 
 
 @protocol CTAssetsPickerControllerDelegate;
@@ -105,6 +105,9 @@
  *  @see selectAsset:
  */
 - (void)deselectAsset:(ALAsset *)asset;
+
+- (void) selectMediaItem: (MPMediaItem*) item;
+- (void) deselectMediaItem: (MPMediaItem*) item;
 
 @end
 
