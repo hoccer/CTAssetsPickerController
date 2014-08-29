@@ -469,7 +469,7 @@ NSString * const kPlaylists = @"Playlists";
     if (self.browsingAlbums) {
         CTAssetsViewController * assetView = [[CTAssetsViewController alloc] init];
         assetView.assetsGroup = [self.groups objectAtIndex:indexPath.row];
-
+        vc = assetView;
     } else {
         UITableViewCell * cell = [self.tableView cellForRowAtIndexPath: indexPath];
         NSString * groupName = self.toplevelLibraryGroups[cell.tag];
