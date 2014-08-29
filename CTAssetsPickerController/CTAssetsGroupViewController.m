@@ -156,8 +156,6 @@ NSString * const kPlaylists = @"Playlists";
 }
 
 - (void) didToggleSource: (UISegmentedControl*) control {
-    NSLog(@"toggologgo");
-
     self.tableView.rowHeight = (self.browsingAlbums  ? kThumbnailLength : 32) + kHXOCellPadding;
     self.tableView.separatorStyle = self.browsingAlbums ? UITableViewCellSeparatorStyleNone : UITableViewCellSeparatorStyleSingleLine;
 
@@ -481,7 +479,6 @@ NSString * const kPlaylists = @"Playlists";
             songsViewController.queryType = JGMediaQueryTypeSongs;
             songsViewController.mediaQuery = [MPMediaQuery songsQuery];
             songsViewController.title = NSLocalizedString(@"Songs", @"Songs");
-            songsViewController.tabBarItem.image = [UIImage imageNamed:@"Songs.png"];
             songsViewController.delegate = self;
             songsViewController.showsCancelButton = YES;
             songsViewController.allowsSelectionOfNonPlayableItem = NO;
@@ -491,7 +488,6 @@ NSString * const kPlaylists = @"Playlists";
             artistsViewController.queryType = JGMediaQueryTypeArtists;
             artistsViewController.mediaQuery = [MPMediaQuery artistsQuery];
             artistsViewController.title = NSLocalizedString(@"Artists", @"Artists");
-            artistsViewController.tabBarItem.image = [UIImage imageNamed:@"Artists.png"];
             artistsViewController.delegate = self;
             artistsViewController.showsCancelButton = YES;
             artistsViewController.allowsSelectionOfNonPlayableItem = NO;
@@ -501,7 +497,6 @@ NSString * const kPlaylists = @"Playlists";
             albumsViewController.queryType = JGMediaQueryTypeAlbums;
             albumsViewController.mediaQuery = [MPMediaQuery albumsQuery];
             albumsViewController.title = NSLocalizedString(@"Albums", @"Albums");
-            albumsViewController.tabBarItem.image = [UIImage imageNamed:@"Albums.png"];
             albumsViewController.delegate = self;
             albumsViewController.showsCancelButton = YES;
             albumsViewController.allowsSelectionOfNonPlayableItem = NO;
@@ -511,7 +506,6 @@ NSString * const kPlaylists = @"Playlists";
             playlistsViewController.queryType = JGMediaQueryTypePlaylists;
             playlistsViewController.mediaQuery = [MPMediaQuery playlistsQuery];
             playlistsViewController.title = NSLocalizedString(@"Playlists", @"Playlists");
-            playlistsViewController.tabBarItem.image = [UIImage imageNamed:@"Playlists.png"];
             playlistsViewController.delegate = self;
             playlistsViewController.showsCancelButton = YES;
             playlistsViewController.allowsSelectionOfNonPlayableItem = NO; //self.allowsSelectionOfNonPlayableItem;
@@ -521,6 +515,18 @@ NSString * const kPlaylists = @"Playlists";
         }
     }
     [self.navigationController pushViewController: vc animated: YES];
+}
+
+#pragma mark - JGMediaPickerDelegate 
+
+
+- (void)jgMediaQueryViewController:(JGMediaQueryViewController *)mediaQueryViewController didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection selectedItem:(MPMediaItem *)selectedItem {
+
+    NSLog(@"selected %@", selectedItem);
+}
+
+- (void)jgMediaQueryViewControllerDidCancel:(JGMediaQueryViewController *)mediaPicker {
+
 }
 
 @end
