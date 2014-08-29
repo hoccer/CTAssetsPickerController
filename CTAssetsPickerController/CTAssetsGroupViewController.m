@@ -31,7 +31,7 @@
 #import "CTAssetsGroupViewCell.h"
 #import "CTAssetsViewController.h"
 
-
+#import "HXOUI.h"
 
 @interface CTAssetsPickerController ()
 
@@ -53,6 +53,8 @@
 @property (nonatomic, weak) CTAssetsPickerController *picker;
 @property (nonatomic, strong) NSMutableArray *groups;
 @property (nonatomic, strong) ALAssetsGroup *defaultGroup;
+
+@property (nonatomic, strong) UISegmentedControl * sourceToggle;
 
 @end
 
@@ -79,7 +81,6 @@
     [self setupViews];
     [self setupButtons];
     [self setupToolbar];
-    [self localize];
     [self setupGroup];
 }
 
@@ -114,8 +115,6 @@
 
 - (void)setupViews
 {
-    self.tableView.rowHeight = kThumbnailLength + 12;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)setupButtons
@@ -137,27 +136,29 @@
     
     self.navigationItem.rightBarButtonItem.enabled = (self.picker.selectedAssets.count > 0);
 
-    UISegmentedControl * sourceToggle = [[UISegmentedControl alloc] initWithItems: @[NSLocalizedString(@"attachment_browse_album", nil), NSLocalizedString(@"attachment_browse_library", nil)]];
-    [sourceToggle addTarget:self action: @selector(didToggleSource:) forControlEvents: UIControlEventValueChanged];
-    self.navigationItem.titleView = sourceToggle;
-    sourceToggle.selectedSegmentIndex = 0;
+    self.sourceToggle = [[UISegmentedControl alloc] initWithItems: @[NSLocalizedString(@"attachment_browse_album", nil), NSLocalizedString(@"attachment_browse_library", nil)]];
+    [self.sourceToggle addTarget:self action: @selector(didToggleSource:) forControlEvents: UIControlEventValueChanged];
+    self.navigationItem.titleView = self.sourceToggle;
+    self.sourceToggle.selectedSegmentIndex = 0;
+    [self didToggleSource: self.sourceToggle];
 }
 
-- (void) didToggleSource: (id) sender {
+- (void) didToggleSource: (UISegmentedControl*) control {
     NSLog(@"toggologgo");
+
+    self.tableView.rowHeight = (self.browsingAlbums  ? kThumbnailLength : 32) + kHXOCellPadding;
+    self.tableView.separatorStyle = self.browsingAlbums ? UITableViewCellSeparatorStyleNone : UITableViewCellSeparatorStyleSingleLine;
+
+    [self reloadData];
+}
+
+- (BOOL) browsingAlbums {
+    return self.sourceToggle.selectedSegmentIndex == 0;
 }
 
 - (void)setupToolbar
 {
     self.toolbarItems = self.picker.toolbarItems;
-}
-
-- (void)localize
-{
-    if (!self.picker.title)
-        self.title = NSLocalizedString(@"Photos", nil);
-    else
-        self.title = self.picker.title;
 }
 
 - (void)setupGroup
@@ -420,7 +421,11 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.groups.count;
+    return self.browsingAlbums ? self.groups.count : self.toplevelLibraryGroups.count;
+}
+
+- (NSArray*) toplevelLibraryGroups {
+    return @[@"Songs", @"Artists", @"Albums", @"Playlists"];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -431,9 +436,16 @@
     
     if (cell == nil)
         cell = [[CTAssetsGroupViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-    
-    [cell bind:[self.groups objectAtIndex:indexPath.row] showNumberOfAssets:self.picker.showsNumberOfAssets];
-    
+
+    if (self.browsingAlbums) {
+        [cell bind:[self.groups objectAtIndex:indexPath.row] showNumberOfAssets:self.picker.showsNumberOfAssets];
+    } else {
+        cell.textLabel.text = self.toplevelLibraryGroups[indexPath.row];
+        cell.imageView.image = nil;
+        cell.detailTextLabel.text = nil;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+
     return cell;
 }
 
@@ -442,10 +454,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CTAssetsViewController *vc = [[CTAssetsViewController alloc] init];
-    vc.assetsGroup = [self.groups objectAtIndex:indexPath.row];
-    
-    [self.navigationController pushViewController:vc animated:YES];
+    if (self.browsingAlbums) {
+        CTAssetsViewController *vc = [[CTAssetsViewController alloc] init];
+        vc.assetsGroup = [self.groups objectAtIndex:indexPath.row];
+
+        [self.navigationController pushViewController:vc animated:YES];
+    } else {
+        NSLog(@"push %@", self.toplevelLibraryGroups[indexPath.row]);
+    }
 }
 
 @end
