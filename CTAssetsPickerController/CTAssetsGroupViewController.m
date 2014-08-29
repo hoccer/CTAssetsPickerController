@@ -22,7 +22,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
- 
+
  */
 
 #import "CTAssetsPickerConstants.h"
@@ -36,12 +36,10 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
-
 NSString * const kSongs     = @"Songs";
 NSString * const kArtists   = @"Artists";
 NSString * const kAlbums    = @"Albums";
 NSString * const kPlaylists = @"Playlists";
-
 
 @interface CTAssetsPickerController ()
 
@@ -55,8 +53,6 @@ NSString * const kPlaylists = @"Playlists";
 - (UIView *)noAssetsView;
 
 @end
-
-
 
 @interface CTAssetsGroupViewController()
 
@@ -515,15 +511,24 @@ NSString * const kPlaylists = @"Playlists";
 
 #pragma mark - JGMediaPickerDelegate 
 
-
 - (void)jgMediaQueryViewController:(JGMediaQueryViewController *)mediaQueryViewController didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection selectedItem:(MPMediaItem *)selectedItem {
 
     //NSLog(@"selected %@", selectedItem);
     [self.picker selectMediaItem: selectedItem];
 }
 
-- (void)jgMediaQueryViewControllerDidCancel:(JGMediaQueryViewController *)mediaPicker {
-
+- (void)jgMediaQueryViewController:(JGMediaQueryViewController *)mediaPicker deselectItem: (MPMediaItem*) item {
+    [self.picker deselectMediaItem: item];
 }
+
+
+- (void)jgMediaQueryViewControllerDidCancel:(JGMediaQueryViewController *)mediaPicker {
+    [self.picker dismiss: self];
+}
+
+- (BOOL)jgMediaQueryViewController:(JGMediaQueryViewController *)mediaPicker isItemSelected: (MPMediaItem*) item {
+    return [self.picker.selectedAssets indexOfObject: item] != NSNotFound;
+}
+
 
 @end
