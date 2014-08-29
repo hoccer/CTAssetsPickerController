@@ -32,6 +32,16 @@
 #import "CTAssetsViewController.h"
 
 #import "HXOUI.h"
+#import "JGMediaQueryViewController.h"
+
+#import <MediaPlayer/MediaPlayer.h>
+
+
+NSString * const kSongs     = @"Songs";
+NSString * const kArtists   = @"Artists";
+NSString * const kAlbums    = @"Albums";
+NSString * const kPlaylists = @"Playlists";
+
 
 @interface CTAssetsPickerController ()
 
@@ -55,6 +65,8 @@
 @property (nonatomic, strong) ALAssetsGroup *defaultGroup;
 
 @property (nonatomic, strong) UISegmentedControl * sourceToggle;
+@property (nonatomic, readonly) NSArray * toplevelLibraryGroups;
+@property (nonatomic, readonly) BOOL browsingAlbums;
 
 @end
 
@@ -425,7 +437,7 @@
 }
 
 - (NSArray*) toplevelLibraryGroups {
-    return @[@"Songs", @"Artists", @"Albums", @"Playlists"];
+    return @[kSongs, kArtists, kAlbums, kPlaylists];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -440,7 +452,8 @@
     if (self.browsingAlbums) {
         [cell bind:[self.groups objectAtIndex:indexPath.row] showNumberOfAssets:self.picker.showsNumberOfAssets];
     } else {
-        cell.textLabel.text = self.toplevelLibraryGroups[indexPath.row];
+        cell.tag = indexPath.row; // TODO: change this to get better decoupling... good enough for now though.
+        cell.textLabel.text = NSLocalizedString(self.toplevelLibraryGroups[indexPath.row], nil);
         cell.imageView.image = nil;
         cell.detailTextLabel.text = nil;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -454,14 +467,60 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UIViewController * vc = nil;
     if (self.browsingAlbums) {
-        CTAssetsViewController *vc = [[CTAssetsViewController alloc] init];
-        vc.assetsGroup = [self.groups objectAtIndex:indexPath.row];
+        CTAssetsViewController * assetView = [[CTAssetsViewController alloc] init];
+        assetView.assetsGroup = [self.groups objectAtIndex:indexPath.row];
 
-        [self.navigationController pushViewController:vc animated:YES];
     } else {
-        NSLog(@"push %@", self.toplevelLibraryGroups[indexPath.row]);
+        UITableViewCell * cell = [self.tableView cellForRowAtIndexPath: indexPath];
+        NSString * groupName = self.toplevelLibraryGroups[cell.tag];
+
+        if ([kSongs isEqualToString: groupName]) {
+            JGMediaQueryViewController *songsViewController = [[JGMediaQueryViewController alloc] initWithNibName:@"JGMediaQueryViewController" bundle:nil];
+            songsViewController.queryType = JGMediaQueryTypeSongs;
+            songsViewController.mediaQuery = [MPMediaQuery songsQuery];
+            songsViewController.title = NSLocalizedString(@"Songs", @"Songs");
+            songsViewController.tabBarItem.image = [UIImage imageNamed:@"Songs.png"];
+            songsViewController.delegate = self;
+            songsViewController.showsCancelButton = YES;
+            songsViewController.allowsSelectionOfNonPlayableItem = NO;
+            vc = songsViewController;
+        } else if ([kArtists isEqualToString: groupName]) {
+            JGMediaQueryViewController *artistsViewController = [[JGMediaQueryViewController alloc] initWithNibName:@"JGMediaQueryViewController" bundle:nil];
+            artistsViewController.queryType = JGMediaQueryTypeArtists;
+            artistsViewController.mediaQuery = [MPMediaQuery artistsQuery];
+            artistsViewController.title = NSLocalizedString(@"Artists", @"Artists");
+            artistsViewController.tabBarItem.image = [UIImage imageNamed:@"Artists.png"];
+            artistsViewController.delegate = self;
+            artistsViewController.showsCancelButton = YES;
+            artistsViewController.allowsSelectionOfNonPlayableItem = NO;
+            vc = artistsViewController;
+        } else if ([kAlbums isEqualToString: groupName]) {
+            JGMediaQueryViewController *albumsViewController = [[JGMediaQueryViewController alloc] initWithNibName:@"JGMediaQueryViewController" bundle:nil];
+            albumsViewController.queryType = JGMediaQueryTypeAlbums;
+            albumsViewController.mediaQuery = [MPMediaQuery albumsQuery];
+            albumsViewController.title = NSLocalizedString(@"Albums", @"Albums");
+            albumsViewController.tabBarItem.image = [UIImage imageNamed:@"Albums.png"];
+            albumsViewController.delegate = self;
+            albumsViewController.showsCancelButton = YES;
+            albumsViewController.allowsSelectionOfNonPlayableItem = NO;
+            vc = albumsViewController;
+        } else if ([kPlaylists isEqualToString: groupName]) {
+            JGMediaQueryViewController *playlistsViewController = [[JGMediaQueryViewController alloc] initWithNibName:@"JGMediaQueryViewController" bundle:nil];
+            playlistsViewController.queryType = JGMediaQueryTypePlaylists;
+            playlistsViewController.mediaQuery = [MPMediaQuery playlistsQuery];
+            playlistsViewController.title = NSLocalizedString(@"Playlists", @"Playlists");
+            playlistsViewController.tabBarItem.image = [UIImage imageNamed:@"Playlists.png"];
+            playlistsViewController.delegate = self;
+            playlistsViewController.showsCancelButton = YES;
+            playlistsViewController.allowsSelectionOfNonPlayableItem = NO; //self.allowsSelectionOfNonPlayableItem;
+            vc = playlistsViewController;
+        } else {
+            NSLog(@"Unhandled subview %@", groupName);
+        }
     }
+    [self.navigationController pushViewController: vc animated: YES];
 }
 
 @end
