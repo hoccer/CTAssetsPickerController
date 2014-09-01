@@ -530,5 +530,9 @@ NSString * const kPlaylists = @"Playlists";
     return [self.picker.selectedAssets indexOfObject: item] != NSNotFound;
 }
 
+- (NSArray*) selectedItems {
+    return self.picker.selectedAssets;
+}
+
 
 @end
