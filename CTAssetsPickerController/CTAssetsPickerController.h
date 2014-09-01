@@ -108,6 +108,7 @@
 
 - (void) selectMediaItem: (MPMediaItem*) item;
 - (void) deselectMediaItem: (MPMediaItem*) item;
+- (void)finishPickingAssets:(id)sender;
 
 @end
 

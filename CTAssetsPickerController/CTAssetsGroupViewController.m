@@ -534,5 +534,10 @@ NSString * const kPlaylists = @"Playlists";
     return self.picker.selectedAssets;
 }
 
+- (void) didFinishPickingSongs: (JGMediaQueryViewController*) viewController {
+    [self.picker finishPickingAssets: viewController];
+}
+
+
 
 @end
