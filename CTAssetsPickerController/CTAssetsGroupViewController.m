@@ -36,10 +36,10 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
-NSString * const kSongs     = @"Songs";
-NSString * const kArtists   = @"Artists";
-NSString * const kAlbums    = @"Albums";
-NSString * const kPlaylists = @"Playlists";
+NSString * const kSongs     = @"attachment_music_songs";
+NSString * const kArtists   = @"attachment_music_artists";
+NSString * const kAlbums    = @"attachment_music_albums";
+NSString * const kPlaylists = @"attachment_music_playlists";
 
 @interface CTAssetsPickerController ()
 
@@ -126,14 +126,14 @@ NSString * const kPlaylists = @"Playlists";
     if (self.picker.showsCancelButton)
     {
         self.navigationItem.leftBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Cancel", nil)
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"cancel", nil)
                                          style:UIBarButtonItemStylePlain
                                         target:self.picker
                                         action:@selector(dismiss:)];
     }
     
     self.navigationItem.rightBarButtonItem =
-    [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Done", nil)
+    [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"done", nil)
                                      style:UIBarButtonItemStyleDone
                                     target:self.picker
                                     action:@selector(finishPickingAssets:)];
