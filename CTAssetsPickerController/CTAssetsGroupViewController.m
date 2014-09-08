@@ -32,6 +32,7 @@
 #import "CTAssetsViewController.h"
 
 #import "HXOUI.h"
+#import "HXOUserDefaults.h"
 #import "JGMediaQueryViewController.h"
 
 #import <MediaPlayer/MediaPlayer.h>
@@ -141,8 +142,12 @@ NSString * const kPlaylists = @"attachment_music_playlists";
     self.navigationItem.rightBarButtonItem.enabled = (self.picker.selectedAssets.count > 0);
 
     self.sourceToggle = [[UISegmentedControl alloc] initWithItems: @[NSLocalizedString(@"attachment_browse_album", nil), NSLocalizedString(@"attachment_browse_library", nil)]];
-    [self.sourceToggle addTarget:self action: @selector(didToggleSource:) forControlEvents: UIControlEventValueChanged];
-    self.navigationItem.titleView = self.sourceToggle;
+    if ([[[HXOUserDefaults standardUserDefaults] valueForKey: kHXOMPMediaAccess] boolValue]) {
+        [self.sourceToggle addTarget:self action: @selector(didToggleSource:) forControlEvents: UIControlEventValueChanged];
+        self.navigationItem.titleView = self.sourceToggle;
+    } else {
+        self.navigationItem.title = NSLocalizedString(@"attachment_browse_album", nil);
+    }
     self.sourceToggle.selectedSegmentIndex = 0;
     [self didToggleSource: self.sourceToggle];
 }
