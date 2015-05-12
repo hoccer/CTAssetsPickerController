@@ -397,7 +397,7 @@ NSString * const CTAssetsPickerSelectedAssetsChangedNotification = @"CTAssetsPic
 
 - (NSPredicate*) songPredicate {
     return [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-        NSLog(@"%@", evaluatedObject);
+        // NSLog(@"songPredicate: %@", evaluatedObject);
         return [evaluatedObject isKindOfClass: [MPMediaItem class]];
     }];
 }
